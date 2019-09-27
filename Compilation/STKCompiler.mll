@@ -1,0 +1,140 @@
+{
+	(* Prélude : ouverture des fichiers et définition de fonctions auxiliaires *)
+
+	open Lexing
+
+	(* Exception à déclencher à la fin du fichier *)
+	exception Eof
+
+	(* Récupération du nom du fichier source sur la ligne de commande *)
+	let input_file = Sys.argv.(1)
+	let _ =
+		if not (Filename.check_suffix input_file ".stk") then
+			failwith "expected .stk extension"
+
+	(* Ouverture du fichier source et création du fichier cible *)
+	let input = open_in input_file
+	let output = open_out ((Filename.chop_suffix input_file ".stk") ^ ".asm")
+
+	(* Fonction d'écriture spécialisée pour cibler le fichier cible *)
+	let print s = Printf.fprintf output "%s" s
+
+	(* Création d'une structure d'analyse lexicale [lexbuf] initialisée avec le texte du fichier source *)
+	let lexbuf = from_channel input
+
+	(* Prend la valeur dans le registre r et la place a	usommet de la pile *)
+	let push r = 
+		print "  DIRECTREAD $r15 stack_pointer\n";
+		print "  DECR $r15 1\n";
+		print ("  WRITE $r15 " ^ r ^ "\n");
+		print "  DIRECTWRITE stack_pointer $r15\n"
+		
+	(* Prend la valeur au sommet de la pile et la place dans le registre r *)
+	let pop r = 
+		print "  DIRECTREAD $r15 stack_pointer\n";
+		print ("  READ " ^ r ^ " $r15\n");
+		print "  INCR $r15 1\n";
+		print "  DIRECTWRITE stack_pointer $r15\n"
+}
+
+let space = ['\n' ' ']
+let letter = ['a'-'z' 'A'-'Z']
+let digit = ['0'-'9']
+
+rule instruction = parse
+	| ".text"	{ print "#Instruction\n";
+							instruction lexbuf
+						}
+	| ".data"	{	print "#Donnee\n";
+							donnee lexbuf
+						}
+	| "NOP"	{ print "  NOP\n" }
+	| "EXIT" { print "  EXIT\n" }
+	| "PRINT"	{ pop "$r0"; (* récupérer une valeur avec pop, et la placer dans $r0 *)
+ 							print "  PRINT $r0\n";
+							instruction lexbuf
+						}
+	| "READ"	{ pop "$r0";
+							print "  READ $r0 $r0\n";
+							push "$r0";
+							instruction lexbuf
+						}
+	| "WRITE"	{ pop "$r0";
+							pop "$r1";
+							print "  WRITE $r1 $r0\n";
+							instruction lexbuf
+						}
+	| "JUMP"	{ pop "$r0";
+							print "  JUMP $r0";
+							instruction lexbuf
+						}
+	| "JUMPWHEN"	{ pop "$r0";
+									pop "$r1";
+									print "  JUMPWHEN $r1 $r0\n";
+									instruction lexbuf
+								}
+	| "MOVE"	{ instruction lexbuf(*TODO:*) }
+	| "MINUS"	{ instruction lexbuf(*TODO:*) }
+	| "NEG"	{ instruction lexbuf(*TODO:*) }
+	| "ADD"	{ pop "$r0";
+						pop "$r1";
+						print "  ADD $r0 $r1 $r0\n";
+						push "$r0";
+						instruction lexbuf
+					}
+	| "SUB"	{ instruction lexbuf(*TODO:*) }
+	| "MULT"	{ pop "$r0";
+							pop "$r1";
+							print "  MULT $r0 $r1 $r0\n";
+							push "$r0";
+							instruction lexbuf
+						}
+	| "DIV"	{ instruction lexbuf(*TODO:*) }
+	| "REM"	{ instruction lexbuf(*TODO:*) }
+	| "EQ"	{ instruction lexbuf(*TODO:*) }
+	| "NEQ"	{ instruction lexbuf(*TODO:*) }
+	| "LT"	{ instruction lexbuf(*TODO:*) }
+	| "LE"	{ instruction lexbuf(*TODO:*) }
+	| "GT"	{ instruction lexbuf(*TODO:*) }
+	| "GE"	{ pop "$r0";
+						pop "$r1";
+						print "  GE $r0 $r1 $r0\n";
+						push "$r0";
+						instruction lexbuf
+					}
+	| "AND"	{ instruction lexbuf(*TODO:*) }
+	| "OR"	{ instruction lexbuf(*TODO:*) }
+	| digit+	{	print ("  CONST $r0 " ^ (lexeme lexbuf) ^ "\n");
+							push "$r0";
+							instruction lexbuf
+						}
+	| (letter | digit | '_')+	{ print ("  ADDRESS $r0 " ^ (lexeme lexbuf) ^ "\n");
+															push "$r0";
+															instruction lexbuf
+														}
+	| space	{ instruction lexbuf }
+	| _	{ failwith ("Unknow character : " ^ (lexeme lexbuf)) }
+
+and donnee = parse
+	| (letter | digit | '_')+ ':'	{ print ((lexeme lexbuf) ^ "\n");
+																	donnee lexbuf
+																}
+	| digit+	{ print ("  " ^ (lexeme lexbuf) ^ "\n");
+							donnee lexbuf
+						}
+	| eof	{ raise Eof }
+	| _ { donnee lexbuf (*TODO: a suppr!?*)} 
+
+{
+	(* Main *)
+	let _ =
+		try
+			(* while true do *)
+					instruction lexbuf
+			(* done *)
+		with Eof -> (* fin du programme, fermer le fichier cible *)
+			print "stack_pointer:\n";
+			print "  65536";
+			close_in input;
+			close_out output
+}
