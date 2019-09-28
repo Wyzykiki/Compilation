@@ -40,6 +40,7 @@
 let spaces = ['\n' ' ']
 let letter = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
+let commentLine = '#' [^ '\n']* '\n'
 
 rule instruction = parse
 	| ".text"	{ print "#Instruction\n";
@@ -164,9 +165,12 @@ rule instruction = parse
 															instruction lexbuf
 														}
 	| (letter | digit | '_')+ ':'	{ print ((lexeme lexbuf) ^ "\n");
-				instruction lexbuf
-			}
+																	instruction lexbuf
+																}
 	| spaces	{ instruction lexbuf }
+	| commentLine	{ print (lexeme lexbuf);
+									instruction lexbuf
+								}
 	| _	{ failwith ("Unknow character : " ^ (lexeme lexbuf)) }
 
 and donnee = parse
@@ -178,6 +182,9 @@ and donnee = parse
 						}
 	| eof	{ raise Eof }
 	| spaces { donnee lexbuf }
+	| commentLine	{ print (lexeme lexbuf);
+									donnee lexbuf
+								}
 	| _	{ failwith ("Unknow character : " ^ (lexeme lexbuf)) }
 
 {
