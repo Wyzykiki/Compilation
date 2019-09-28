@@ -37,7 +37,7 @@
 		print "  DIRECTWRITE stack_pointer $r15\n"
 }
 
-let space = ['\n' ' ']
+let spaces = ['\n' ' ']
 let letter = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
 
@@ -48,9 +48,13 @@ rule instruction = parse
 	| ".data"	{	print "#Donnee\n";
 							donnee lexbuf
 						}
-	| "NOP"	{ print "  NOP\n" }
-	| "EXIT" { print "  EXIT\n" }
-	| "PRINT"	{ pop "$r0"; (* récupérer une valeur avec pop, et la placer dans $r0 *)
+	| "NOP"	{ print "  NOP\n";
+							instruction lexbuf
+					}
+	| "EXIT" 	{ print "  EXIT\n";
+							instruction lexbuf
+						}
+	| "PRINT"	{ pop "$r0";
  							print "  PRINT $r0\n";
 							instruction lexbuf
 						}
@@ -65,45 +69,92 @@ rule instruction = parse
 							instruction lexbuf
 						}
 	| "JUMP"	{ pop "$r0";
-							print "  JUMP $r0";
+							print "  JUMP $r0\n";
 							instruction lexbuf
 						}
 	| "JUMPWHEN"	{ pop "$r0";
 									pop "$r1";
-									print "  JUMPWHEN $r1 $r0\n";
+									print "  JUMP $r1 WHEN $r0\n";
 									instruction lexbuf
 								}
-	| "MOVE"	{ instruction lexbuf(*TODO:*) }
-	| "MINUS"	{ instruction lexbuf(*TODO:*) }
-	| "NEG"	{ instruction lexbuf(*TODO:*) }
+	| "MINUS"	{ pop "$r0";
+							print "  MINUS $r0 $r0";
+							push "$r0";
+							instruction lexbuf
+						}
+	| "NOT"	{ pop "$r0";
+						print "  NEG $r0 $r0";
+						push "$r0";
+						instruction lexbuf
+					}
 	| "ADD"	{ pop "$r0";
 						pop "$r1";
 						print "  ADD $r0 $r1 $r0\n";
 						push "$r0";
 						instruction lexbuf
 					}
-	| "SUB"	{ instruction lexbuf(*TODO:*) }
+	| "SUB"	{ pop "$r0";
+						pop "$r1";
+						print "  SUB $r0 $r1 $r0\n";
+						push "$r0";
+						instruction lexbuf }
 	| "MULT"	{ pop "$r0";
 							pop "$r1";
 							print "  MULT $r0 $r1 $r0\n";
 							push "$r0";
 							instruction lexbuf
 						}
-	| "DIV"	{ instruction lexbuf(*TODO:*) }
-	| "REM"	{ instruction lexbuf(*TODO:*) }
-	| "EQ"	{ instruction lexbuf(*TODO:*) }
-	| "NEQ"	{ instruction lexbuf(*TODO:*) }
-	| "LT"	{ instruction lexbuf(*TODO:*) }
-	| "LE"	{ instruction lexbuf(*TODO:*) }
-	| "GT"	{ instruction lexbuf(*TODO:*) }
+	| "DIV"	{ pop "$r0";
+						pop "$r1";
+						print "  DIV $r0 $r1 $r0\n";
+						push "$r0";
+						instruction lexbuf }
+	| "REM"	{ pop "$r0";
+						pop "$r1";
+						print "  REM $r0 $r1 $r0\n";
+						push "$r0";
+						instruction lexbuf }
+	| "EQ"	{ pop "$r0";
+						pop "$r1";
+						print "  EQ $r0 $r1 $r0\n";
+						push "$r0";
+						instruction lexbuf }
+	| "NEQ"	{ pop "$r0";
+						pop "$r1";
+						print "  NEQ $r0 $r1 $r0\n";
+						push "$r0";
+						instruction lexbuf }
+	| "LT"	{ pop "$r0";
+						pop "$r1";
+						print "  LT $r0 $r1 $r0\n";
+						push "$r0";
+						instruction lexbuf }
+	| "LE"	{ pop "$r0";
+						pop "$r1";
+						print "  LE $r0 $r1 $r0\n";
+						push "$r0";
+						instruction lexbuf }
+	| "GT"	{ pop "$r0";
+						pop "$r1";
+						print "  GT $r0 $r1 $r0\n";
+						push "$r0";
+						instruction lexbuf }
 	| "GE"	{ pop "$r0";
 						pop "$r1";
 						print "  GE $r0 $r1 $r0\n";
 						push "$r0";
 						instruction lexbuf
 					}
-	| "AND"	{ instruction lexbuf(*TODO:*) }
-	| "OR"	{ instruction lexbuf(*TODO:*) }
+	| "AND"	{ pop "$r0";
+						pop "$r1";
+						print "  AND $r0 $r1 $r0\n";
+						push "$r0";
+						instruction lexbuf }
+	| "OR"	{ pop "$r0";
+						pop "$r1";
+						print "  OR $r0 $r1 $r0\n";
+						push "$r0";
+						instruction lexbuf }
 	| digit+	{	print ("  CONST $r0 " ^ (lexeme lexbuf) ^ "\n");
 							push "$r0";
 							instruction lexbuf
@@ -112,7 +163,10 @@ rule instruction = parse
 															push "$r0";
 															instruction lexbuf
 														}
-	| space	{ instruction lexbuf }
+	| (letter | digit | '_')+ ':'	{ print ((lexeme lexbuf) ^ "\n");
+				instruction lexbuf
+			}
+	| spaces	{ instruction lexbuf }
 	| _	{ failwith ("Unknow character : " ^ (lexeme lexbuf)) }
 
 and donnee = parse
@@ -123,15 +177,14 @@ and donnee = parse
 							donnee lexbuf
 						}
 	| eof	{ raise Eof }
-	| _ { donnee lexbuf (*TODO: a suppr!?*)} 
+	| spaces { donnee lexbuf }
+	| _	{ failwith ("Unknow character : " ^ (lexeme lexbuf)) }
 
 {
 	(* Main *)
 	let _ =
 		try
-			(* while true do *)
-					instruction lexbuf
-			(* done *)
+			instruction lexbuf
 		with Eof -> (* fin du programme, fermer le fichier cible *)
 			print "stack_pointer:\n";
 			print "  65536";
