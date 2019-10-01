@@ -40,8 +40,10 @@
 let spaces = ['\n' ' ']
 let letter = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
+let id = (letter | digit | '_')+
 let commentLine = '#' [^ '\n']* '\n'
 
+(* Les règles dans la partie .text *)
 rule instruction = parse
 	| ".text"	{ print "#Instruction\n";
 							instruction lexbuf
@@ -79,12 +81,12 @@ rule instruction = parse
 									instruction lexbuf
 								}
 	| "MINUS"	{ pop "$r0";
-							print "  MINUS $r0 $r0";
+							print "  MINUS $r0 $r0\n";
 							push "$r0";
 							instruction lexbuf
 						}
 	| "NOT"	{ pop "$r0";
-						print "  NEG $r0 $r0";
+						print "  NEG $r0 $r0\n";
 						push "$r0";
 						instruction lexbuf
 					}
@@ -160,11 +162,11 @@ rule instruction = parse
 							push "$r0";
 							instruction lexbuf
 						}
-	| (letter | digit | '_')+	{ print ("  ADDRESS $r0 " ^ (lexeme lexbuf) ^ "\n");
+	| id	{ print ("  ADDRESS $r0 " ^ (lexeme lexbuf) ^ "\n");
 															push "$r0";
 															instruction lexbuf
 														}
-	| (letter | digit | '_')+ ':'	{ print ((lexeme lexbuf) ^ "\n");
+	| id ':'	{ print ((lexeme lexbuf) ^ "\n");
 																	instruction lexbuf
 																}
 	| spaces	{ instruction lexbuf }
@@ -173,8 +175,9 @@ rule instruction = parse
 								}
 	| _	{ failwith ("Unknow character : " ^ (lexeme lexbuf)) }
 
+(* Les règles dans la partie .data *)
 and donnee = parse
-	| (letter | digit | '_')+ ':'	{ print ((lexeme lexbuf) ^ "\n");
+	| id ':'	{ print ((lexeme lexbuf) ^ "\n");
 																	donnee lexbuf
 																}
 	| digit+	{ print ("  " ^ (lexeme lexbuf) ^ "\n");
