@@ -57,123 +57,87 @@ rule instruction = parse
 	| "EXIT" 	{ print "  EXIT\n";
 							instruction lexbuf
 						}
-	| "PRINT"	{ pop "$r0";
- 							print "  PRINT $r0\n";
+	| "PRINT"	{ print "  PRINT $r0\n";
 							instruction lexbuf
 						}
-	| "READ"	{ pop "$r0";
-							print "  READ $r0 $r0\n";
-							push "$r0";
+	| "READ"	{ print "  READ $r0 $r0\n";
 							instruction lexbuf
 						}
-	| "WRITE"	{ pop "$r0";
-							pop "$r1";
+	| "WRITE"	{ pop "$r1";
 							print "  WRITE $r1 $r0\n";
 							instruction lexbuf
 						}
-	| "JUMP"	{ pop "$r0";
-							print "  JUMP $r0\n";
+	| "JUMP"	{ print "  JUMP $r0\n";
 							instruction lexbuf
 						}
-	| "JUMPWHEN"	{ pop "$r0";
-									pop "$r1";
+	| "JUMPWHEN"	{ pop "$r1";
 									print "  JUMP $r1 WHEN $r0\n";
 									instruction lexbuf
 								}
-	| "MINUS"	{ pop "$r0";
-							print "  MINUS $r0 $r0\n";
-							push "$r0";
+	| "MINUS"	{ print "  MINUS $r0 $r0\n";
 							instruction lexbuf
 						}
-	| "NOT"	{ pop "$r0";
-						print "  NEG $r0 $r0\n";
-						push "$r0";
+	| "NOT"	{ print "  NEG $r0 $r0\n";
 						instruction lexbuf
 					}
-	| "ADD"	{ pop "$r0";
-						pop "$r1";
+	| "ADD"	{ pop "$r1";
 						print "  ADD $r0 $r1 $r0\n";
-						push "$r0";
 						instruction lexbuf
 					}
-	| "SUB"	{ pop "$r0";
-						pop "$r1";
+	| "SUB"	{ pop "$r1";
 						print "  SUB $r0 $r1 $r0\n";
-						push "$r0";
 						instruction lexbuf
 					}
-	| "MULT"	{ pop "$r0";
-							pop "$r1";
+	| "MULT"	{ pop "$r1";
 							print "  MULT $r0 $r1 $r0\n";
-							push "$r0";
 							instruction lexbuf
 						}
-	| "DIV"	{ pop "$r0";
-						pop "$r1";
+	| "DIV"	{ pop "$r1";
 						print "  DIV $r0 $r1 $r0\n";
-						push "$r0";
 						instruction lexbuf
 					}
-	| "REM"	{ pop "$r0";
-						pop "$r1";
+	| "REM"	{ pop "$r1";
 						print "  REM $r0 $r1 $r0\n";
-						push "$r0";
 						instruction lexbuf
 					}
-	| "EQ"	{ pop "$r0";
-						pop "$r1";
+	| "EQ"	{ pop "$r1";
 						print "  EQ $r0 $r1 $r0\n";
-						push "$r0";
 						instruction lexbuf
 					}
-	| "NEQ"	{ pop "$r0";
-						pop "$r1";
+	| "NEQ"	{ pop "$r1";
 						print "  NEQ $r0 $r1 $r0\n";
-						push "$r0";
 						instruction lexbuf
 					}
-	| "LT"	{ pop "$r0";
-						pop "$r1";
+	| "LT"	{ pop "$r1";
 						print "  LT $r0 $r1 $r0\n";
-						push "$r0";
 						instruction lexbuf
 					}
-	| "LE"	{ pop "$r0";
-						pop "$r1";
+	| "LE"	{ pop "$r1";
 						print "  LE $r0 $r1 $r0\n";
-						push "$r0";
 						instruction lexbuf
 					}
-	| "GT"	{ pop "$r0";
-						pop "$r1";
+	| "GT"	{ pop "$r1";
 						print "  GT $r0 $r1 $r0\n";
-						push "$r0";
 						instruction lexbuf
 					}
-	| "GE"	{ pop "$r0";
-						pop "$r1";
+	| "GE"	{ pop "$r1";
 						print "  GE $r0 $r1 $r0\n";
-						push "$r0";
 						instruction lexbuf
 					}
-	| "AND"	{ pop "$r0";
-						pop "$r1";
+	| "AND"	{ pop "$r1";
 						print "  AND $r0 $r1 $r0\n";
-						push "$r0";
 						instruction lexbuf
 					}
-	| "OR"	{ pop "$r0";
-						pop "$r1";
+	| "OR"	{ pop "$r1";
 						print "  OR $r0 $r1 $r0\n";
-						push "$r0";
 						instruction lexbuf
 					}
-	| digit+	{	print ("  CONST $r0 " ^ (lexeme lexbuf) ^ "\n");
-							push "$r0";
+	| digit+	{	push "$r0";(* On sauvegarde ce qu'il y avait dans l'acc*)
+              print ("  CONST $r0 " ^ (lexeme lexbuf) ^ "\n");(*je place dans l'acc*)
 							instruction lexbuf
 						}
-	| id	{ print ("  ADDRESS $r0 " ^ (lexeme lexbuf) ^ "\n");
-					push "$r0";
+	| id	{ push "$r0";(* On sauvegarde ce qu'il y avait dans l'acc*)
+          print ("  ADDRESS $r0 " ^ (lexeme lexbuf) ^ "\n");(*je place dans l'acc*)
 					instruction lexbuf
 				}
 	| id ':'	{ print ((lexeme lexbuf) ^ "\n");
