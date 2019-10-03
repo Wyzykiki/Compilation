@@ -35,6 +35,9 @@
 		print ("  READ " ^ r ^ " $r15\n");
 		print "  INCR $r15 1\n";
 		print "  DIRECTWRITE stack_pointer $r15\n"
+
+	(* Chaque instruction indique si son action sur l'acc doit être sauvegarde dans le cas d'un remplacement. *)
+	let saveAcc = ref false
 }
 
 let spaces = ['\n' ' ']
@@ -43,7 +46,7 @@ let digit = ['0'-'9']
 let id = (letter | digit | '_')+
 let commentLine = '#' [^ '\n']* '\n'
 
-(* Les règles dans la partie .text *)
+(* Les regles dans la partie .text *)
 rule instruction = parse
 	| ".text"	{ print "#Instruction\n";
 							instruction lexbuf
@@ -58,86 +61,108 @@ rule instruction = parse
 							instruction lexbuf
 						}
 	| "PRINT"	{ print "  PRINT $r0\n";
+							saveAcc := false;
 							instruction lexbuf
 						}
 	| "READ"	{ print "  READ $r0 $r0\n";
+							saveAcc := true;
 							instruction lexbuf
 						}
 	| "WRITE"	{ pop "$r1";
 							print "  WRITE $r1 $r0\n";
+							saveAcc := false;
 							instruction lexbuf
 						}
 	| "JUMP"	{ print "  JUMP $r0\n";
+							saveAcc := false;
 							instruction lexbuf
 						}
 	| "JUMPWHEN"	{ pop "$r1";
 									print "  JUMP $r1 WHEN $r0\n";
+									saveAcc := false;
 									instruction lexbuf
 								}
 	| "MINUS"	{ print "  MINUS $r0 $r0\n";
+							saveAcc := true;
 							instruction lexbuf
 						}
 	| "NOT"	{ print "  NEG $r0 $r0\n";
+						saveAcc := true;
 						instruction lexbuf
 					}
 	| "ADD"	{ pop "$r1";
 						print "  ADD $r0 $r1 $r0\n";
+						saveAcc := true;
 						instruction lexbuf
 					}
 	| "SUB"	{ pop "$r1";
 						print "  SUB $r0 $r1 $r0\n";
+						saveAcc := true;
 						instruction lexbuf
 					}
 	| "MULT"	{ pop "$r1";
 							print "  MULT $r0 $r1 $r0\n";
+							saveAcc := true;
 							instruction lexbuf
 						}
 	| "DIV"	{ pop "$r1";
 						print "  DIV $r0 $r1 $r0\n";
+						saveAcc := true;
 						instruction lexbuf
 					}
 	| "REM"	{ pop "$r1";
 						print "  REM $r0 $r1 $r0\n";
+						saveAcc := true;
 						instruction lexbuf
 					}
 	| "EQ"	{ pop "$r1";
 						print "  EQ $r0 $r1 $r0\n";
+						saveAcc := true;
 						instruction lexbuf
 					}
 	| "NEQ"	{ pop "$r1";
 						print "  NEQ $r0 $r1 $r0\n";
+						saveAcc := true;
 						instruction lexbuf
 					}
 	| "LT"	{ pop "$r1";
 						print "  LT $r0 $r1 $r0\n";
+						saveAcc := true;
 						instruction lexbuf
 					}
 	| "LE"	{ pop "$r1";
 						print "  LE $r0 $r1 $r0\n";
+						saveAcc := true;
 						instruction lexbuf
 					}
 	| "GT"	{ pop "$r1";
 						print "  GT $r0 $r1 $r0\n";
+						saveAcc := true;
 						instruction lexbuf
 					}
 	| "GE"	{ pop "$r1";
 						print "  GE $r0 $r1 $r0\n";
+						saveAcc := true;
 						instruction lexbuf
 					}
 	| "AND"	{ pop "$r1";
 						print "  AND $r0 $r1 $r0\n";
+						saveAcc := true;
 						instruction lexbuf
 					}
 	| "OR"	{ pop "$r1";
 						print "  OR $r0 $r1 $r0\n";
+						saveAcc := true;
 						instruction lexbuf
 					}
-	| digit+	{	push "$r0";(* On sauvegarde ce qu'il y avait dans l'acc*)
-              print ("  CONST $r0 " ^ (lexeme lexbuf) ^ "\n");(*je place dans l'acc*)
+	| digit+	{	if !saveAcc then push "$r0"; (* On sauvegarde ce qu'il y avait dans l'acc *)
+              print ("  CONST $r0 " ^ (lexeme lexbuf) ^ "\n");
+							saveAcc := true;
 							instruction lexbuf
 						}
-	| id	{ push "$r0";(* On sauvegarde ce qu'il y avait dans l'acc*)
-          print ("  ADDRESS $r0 " ^ (lexeme lexbuf) ^ "\n");(*je place dans l'acc*)
+	| id	{ if !saveAcc then push "$r0"; (* On sauvegarde ce qu'il y avait dans l'acc *)
+          print ("  ADDRESS $r0 " ^ (lexeme lexbuf) ^ "\n");
+					saveAcc := true;
 					instruction lexbuf
 				}
 	| id ':'	{ print ((lexeme lexbuf) ^ "\n");
@@ -149,7 +174,7 @@ rule instruction = parse
 								}
 	| _	{ failwith ("Unknow character : " ^ (lexeme lexbuf)) }
 
-(* Les règles dans la partie .data *)
+(* Les regles dans la partie .data *)
 and donnee = parse
 	| id ':'	{ print ((lexeme lexbuf) ^ "\n");
 							donnee lexbuf
