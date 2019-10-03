@@ -22,7 +22,7 @@
 	(* Création d'une structure d'analyse lexicale [lexbuf] initialisée avec le texte du fichier source *)
 	let lexbuf = from_channel input
 
-	(* Prend la valeur dans le registre r et la place a	usommet de la pile *)
+	(* Prend la valeur dans le registre r et la place au sommet de la pile *)
 	let push r = 
 		print "  DIRECTREAD $r15 stack_pointer\n";
 		print "  DECR $r15 1\n";
