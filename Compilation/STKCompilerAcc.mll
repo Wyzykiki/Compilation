@@ -43,7 +43,7 @@
 let spaces = ['\n' ' ']
 let letter = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
-let id = (letter | digit | '_')+
+let id = ['a'-'z' '_'] (letter | digit | '_')*
 let commentLine = '#' [^ '\n']* '\n'
 
 (* Les regles dans la partie .text *)

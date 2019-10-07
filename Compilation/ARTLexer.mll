@@ -8,7 +8,7 @@
 let digit = ['0'-'9']
 let number = digit+
 let letter = ['a'-'z' 'A'-'Z']
-let id = (letter | digit | '_')+
+let id = ['a'-'z' '_'] (letter | digit | '_')*
 let commentLine = '#' [^ '\n']* '\n'
   
 rule token = parse
