@@ -10,12 +10,9 @@
 %token SEMI COLON
 %token LP RP LB RB
 
-
 %token <int>INT
 %token <string>LABEL
 %token <string>BOOL
-
-/* %token <string>COMMENT */
 
 (* Unary operators/instructions *)
 
@@ -25,14 +22,15 @@
 
 %token ADD MINUS STAR DIV REM EQ NEQ LT LE GT GE AND OR AFFECT
 
+(* If/Loop tokens *)
+%token IF ELSE WHILE GOTO FOR BREAK CONTINUE
+
 (* Priority and associativity rules *)
 
 %left ADD MINUS OR
 %left STAR DIV REM AND
 %right NEG
 %nonassoc EQ NEQ LT LE GT GE
-
-%token IF ELSE WHILE GOTO
 
 %start program
 %type <IMP.program> program
@@ -51,15 +49,20 @@ program:
 
 instruction:
 | l=LABEL COLON { IMPInstr.Label(l) }
-/* | c=COMMENT is=instructions { c ^ is } */
 | NOP SEMI { IMPInstr.Nop }
 | PRINT LP e=expression RP SEMI { IMPInstr.Print(e) }
 | EXIT SEMI                     { IMPInstr.Exit }
 | IF LP e=expression RP LB then_i=list(instruction) RB ELSE LB else_i=list(instruction) RB  { IMPInstr.If(e, then_i, else_i) }
 | WHILE LP e=expression RP LB do_i=list(instruction) RB  { IMPInstr.While(e, do_i) }
-| GOTO e=l_expr SEMI  { IMPInstr.Goto(e) }
-| e1=l_expr	AFFECT e2=expression SEMI { IMPInstr.Write(e1, e2) }
-/* | FOR LP  RP LB  RB {  } */
+| GOTO LP e=l_expr RP SEMI  { IMPInstr.Goto(e) }
+| a=affect SEMI	{ a }
+| FOR LP e=expression SEMI step=affect RP LB do_i=list(instruction) RB { IMPInstr.While(e, do_i@[step]) }
+| BREAK SEMI	{ IMPInstr.Break }
+| CONTINUE SEMI	{ IMPInstr.Continue }
+;
+
+affect:
+| e1=l_expr	AFFECT e2=expression { IMPInstr.Write(e1, e2) }
 ;
 
 expression:
@@ -99,5 +102,4 @@ expression:
 
 data_declaration:
 | l=LABEL COLON v=INT { l, v }
-/* | c=COMMENT { c } TODO: demander si commentaire -> pause probleme dans IMP liste de (string,int)*/
 ;

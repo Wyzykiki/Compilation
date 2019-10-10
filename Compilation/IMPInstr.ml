@@ -4,6 +4,8 @@ type instruction =
   | Exit
   | If    of IMPExpr.expression * sequence * sequence
   | While of IMPExpr.expression * sequence
+  | Break
+  | Continue
   | Label of string
   | Goto  of IMPExpr.expression
   | Write of IMPExpr.expression * IMPExpr.expression
@@ -25,6 +27,8 @@ and instr_to_string = function
   | While(c, s) ->
     "while (" ^ (IMPExpr.to_string c) ^ ") {\n"
     ^ (sequence_to_string s) ^ "}\n"
+  | Break -> "break;\n"
+  | Continue -> "continue;\n"
   | Label(lab) -> lab ^ ":\n"
   | Goto(e) -> "goto(" ^ (IMPExpr.le_to_string e) ^ ");\n"
   | Write(le, e) -> (IMPExpr.le_to_string le) ^ " := " ^ (IMPExpr.to_string e) ^ ";\n"

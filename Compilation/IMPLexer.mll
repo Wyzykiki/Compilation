@@ -7,7 +7,8 @@
 
 let digit = ['0'-'9']
 let number = digit+
-let label = ['a'-'z' '_']+
+let letter = ['a'-'z' 'A'-'Z']
+let label = ['a'-'z' '_'] (letter | digit | '_')*
   
 rule token = parse
   | ['\n']
@@ -26,12 +27,20 @@ rule token = parse
       { PRINT }
   | "exit"
       { EXIT }
+  | "goto"
+      { GOTO }
   | "while"
       { WHILE }
+  | "for"
+      { FOR }
   | "if"
       { IF }
   | "else"
       { ELSE }
+  | "break"
+      { BREAK }
+  | "continue"
+      { CONTINUE }
   | "true"
       { BOOL("true") }
   | "false"
