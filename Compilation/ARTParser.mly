@@ -72,7 +72,7 @@ expression:
 
 %inline l_expr:
 | i=ID	{ i }
-| STAR e=expression	{ e ^ " READ" }
+| STAR e=expression	{ e }
 ;
 
 %inline unop:
