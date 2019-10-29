@@ -47,35 +47,38 @@ let eval_program prog =
   and eval_sequence s lenv genv =
     List.iter (fun i -> eval_instruction i lenv genv) s
       
-  and eval_instruction i lenv genv = match i with
-    | Nop -> ()
-    | Exit -> exit 0
-    | Print(e) ->
-      let v = eval_expression e lenv genv in
-      Printf.printf "%c" (char_of_int v)
-    | Write(Name(id), e) -> 
-      if Hashtbl.mem lenv.locals_tbl id then Hashtbl.replace lenv.locals_tbl id (eval_expression e lenv genv)
-      else  if Hashtbl.mem lenv.params_tbl id then Hashtbl.replace lenv.params_tbl id (eval_expression e lenv genv)
-            else  if Hashtbl.mem genv.globals_tbl id then Hashtbl.replace genv.globals_tbl id (eval_expression e lenv genv)
-                  else failwith (id ^ " is undefined!")
-    | If(e, s1, s2) -> 
-      if (eval_expression e lenv genv) != 0 then eval_sequence s1 lenv genv else eval_sequence s2 lenv genv
-    | While(e, s) -> while (eval_expression e lenv genv) != 0 do eval_sequence s lenv genv done
-    | Call(Name(address), Name(function_), params_) ->
-      let fdef = Hashtbl.find functions_tbl function_ in
-      let params = List.map (fun e -> eval_expression e lenv genv) params_ in
-      let returned_value = match eval_function fdef params genv with
-        | None -> failwith ("Can't assign None to " ^ address)
-        | Some(i) -> i
-      in
+  and eval_instruction i lenv genv =
 
-      if Hashtbl.mem lenv.locals_tbl address then Hashtbl.replace lenv.locals_tbl address returned_value
-      else  if Hashtbl.mem lenv.params_tbl address then Hashtbl.replace lenv.params_tbl address returned_value
-            else  if Hashtbl.mem genv.globals_tbl address then Hashtbl.replace genv.globals_tbl address returned_value
-                  else failwith (address ^ " is undefined!")
+    (* Change la valeur de la variable (dans l'environnement où elle est définie) *)
+    let replace_in_env var value =
+      if Hashtbl.mem lenv.locals_tbl var then Hashtbl.replace lenv.locals_tbl var value
+        else  if Hashtbl.mem lenv.params_tbl var then Hashtbl.replace lenv.params_tbl var value
+              else  if Hashtbl.mem genv.globals_tbl var then Hashtbl.replace genv.globals_tbl var value
+                    else failwith (var ^ " is undefined!")
+    in
 
-    | Return(e) -> raise (FunctionResult (eval_expression e lenv genv))
-    | _ -> failwith "not implemented"
+    match i with
+      | Nop -> ()
+      | Exit -> exit 0
+      | Print(e) ->
+        let v = eval_expression e lenv genv in
+        Printf.printf "%c" (char_of_int v)
+      | Write(Name(id), e) -> 
+        replace_in_env id (eval_expression e lenv genv)
+      | If(e, s1, s2) -> 
+        if (eval_expression e lenv genv) != 0 then eval_sequence s1 lenv genv else eval_sequence s2 lenv genv
+      | While(e, s) -> while (eval_expression e lenv genv) != 0 do eval_sequence s lenv genv done
+      | Call(Name(address), Name(function_), params_) ->
+        let fdef = Hashtbl.find functions_tbl function_ in
+        let params = List.map (fun e -> eval_expression e lenv genv) params_ in
+        let returned_value = match eval_function fdef params genv with
+          | None -> failwith ("Can't assign None to " ^ address)
+          | Some(i) -> i
+        in
+        replace_in_env address returned_value
+
+      | Return(e) -> raise (FunctionResult (eval_expression e lenv genv))
+      | _ -> failwith "not implemented"
   
   and eval_expression e lenv genv = match e with
     | Immediate(n) -> n
@@ -87,9 +90,14 @@ let eval_program prog =
       else  if Hashtbl.mem lenv.params_tbl id then Hashtbl.find lenv.params_tbl id
             else  if Hashtbl.mem genv.globals_tbl id then Hashtbl.find genv.globals_tbl id
                   else failwith (id ^ " is undefined!")
-    | Deref(e) -> eval_expression e lenv genv
+    | _ -> failwith "not implemented"
 
   in
 
+  (* Appelle la fonction main avec ses arguments *)
   let main = Hashtbl.find functions_tbl "main" in
-  eval_function main [] { functions_tbl; globals_tbl }
+  let param = ref [] in
+  for i=Array.length Sys.argv -1 downto 2 do
+    param := int_of_string Sys.argv.(i) :: !param
+  done;
+  eval_function main !param { functions_tbl; globals_tbl }
