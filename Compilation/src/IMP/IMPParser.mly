@@ -68,7 +68,7 @@ affect:
 expression:
 | i=INT { IMPExpr.Immediate(i) }
 | b=BOOL { IMPExpr.Name(b) }
-| e=l_expr	{ e }
+| e=l_expr	{ IMPExpr.Deref(e) }
 | LP e=expression RP { e }
 | op=unop	e=expression { IMPExpr.Unop(op, e) }
 | e1=expression op=binop e2=expression	{ IMPExpr.Binop(op, e1, e2) }
@@ -76,7 +76,7 @@ expression:
 
 %inline l_expr:
 | i=LABEL	{ IMPExpr.Name(i) }
-| STAR e=expression	{ IMPExpr.Deref(e) }
+| STAR e=expression	{ e }
 ;
 
 %inline unop:

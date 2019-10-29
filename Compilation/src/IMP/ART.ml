@@ -16,9 +16,9 @@ let rec instr_to_string = function
   | Print(e) -> "print(" ^ (IMPExpr.to_string e) ^ ");"
   | Exit -> "exit;"
   | Label(s) -> s ^ ":"
-  | Jump(e) -> "jump " ^ (IMPExpr.to_string e) ^ ";"
-  | JumpWhen(e, c) -> "jump " ^ (IMPExpr.to_string e) ^ " when " ^ (IMPExpr.to_string c) ^ ";"
-  | Write(le, e) -> (IMPExpr.to_string le) ^ " := " ^ (IMPExpr.to_string e) ^ ";"
+  | Jump(e) -> "jump " ^ (IMPExpr.le_to_string e) ^ ";"
+  | JumpWhen(e, c) -> "jump " ^ (IMPExpr.le_to_string e) ^ " when " ^ (IMPExpr.to_string c) ^ ";"
+  | Write(le, e) -> (IMPExpr.le_to_string le) ^ " := " ^ (IMPExpr.to_string e) ^ ";"
     
 let rec seq_to_string = function
   | [] -> ""
