@@ -1,12 +1,13 @@
 #!/bin/bash
 file=`basename $1 .var`
+dir=`dirname $1`
 echo "VAR to IMP :"
-./VARCompiler.native "${file}.var"
+./VARCompiler.native "${dir}/${file}.var"
 echo "IMP to ART :"
-./IMPCompiler.native "${file}.imp"
+./IMPCompiler.native "${dir}/${file}.imp"
 echo "ART to STK :"
-./ARTCompiler.native "${file}.art"
+./ARTCompiler.native "${dir}/${file}.art"
 echo "STK to ASM :"
-./STKCompilerAlloc.native "${file}.stk"
+./STKCompilerAlloc.native "${dir}/${file}.stk"
 echo "ASM to BTC :"
-./Assembler.native "${file}.asm"
+./Assembler.native "${dir}/${file}.asm"
