@@ -10,7 +10,7 @@ let rec to_string = function
   | Unop(op, e)       -> "(" ^ (Op.uop_to_string op) ^ (to_string e) ^ ")"
   | Binop(op, e1, e2) -> "(" ^ (to_string e1) ^ (Op.bop_to_string op) ^ (to_string e2) ^ ")"
   | Deref(e) -> le_to_string e
-  | Name(id) -> id
+  | Name(id) -> "&" ^ id
 
 and le_to_string = function
   | Name(id) -> id

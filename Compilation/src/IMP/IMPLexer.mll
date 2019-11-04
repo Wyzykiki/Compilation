@@ -89,6 +89,8 @@ rule token = parse
       { OR }
   | ":=" 
       { AFFECT }
+  | "&"
+      { AMPERSAND }
   | eof
       { EOF }
   | _

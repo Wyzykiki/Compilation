@@ -16,7 +16,7 @@
 
 (* Unary operators/instructions *)
 
-%token NOP EXIT PRINT NEG
+%token NOP EXIT PRINT NEG AMPERSAND
 
 (* Binary operators/instructions *)
 
@@ -69,6 +69,7 @@ expression:
 | i=INT { IMPExpr.Immediate(i) }
 | b=BOOL { IMPExpr.Name(b) }
 | e=l_expr	{ IMPExpr.Deref(e) }
+| AMPERSAND le=l_expr { le }
 | LP e=expression RP { e }
 | op=unop	e=expression { IMPExpr.Unop(op, e) }
 | e1=expression op=binop e2=expression	{ IMPExpr.Binop(op, e1, e2) }

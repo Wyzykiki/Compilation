@@ -43,6 +43,7 @@ rule token = parse
   | "&&"  { AND }
   | "||"  { OR }
   | ":="  { AFFECT }
+  | "&" { AMPERSAND }
   | id as i { ID (i) }
   | commentLine as c  { COMMENT (c) }
   | eof
