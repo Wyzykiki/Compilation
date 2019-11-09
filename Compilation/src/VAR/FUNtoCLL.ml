@@ -23,17 +23,20 @@ let rec translate_instruction param_table instr = match instr with
   | F.If(c, s1 ,s2) -> [ C.If(translate_expression c param_table, translate_sequence s1 param_table, translate_sequence s2 param_table) ]
   | F.While(c, s) -> [ C.While(translate_expression c param_table, translate_sequence s param_table) ]
   | F.Call(d, f, args) -> 
-      List.flatten (List.map C.push args)
+      (* Protocole étape 1 *)
+      List.flatten (List.map C.push (List.map (fun e -> translate_expression e param_table) args))
       @ [ C.Call(f) ]
+      (* Protocole étape 5 *)
       @ List.flatten (List.map C.pop args)
       @ [ C.Write(translate_expression d param_table, I.Deref(I.Name("function_return"))) ]
+  (* Protocole étape 4 *)
   | F.Return(e) -> [ C.Write(I.Name("function_return"), translate_expression e param_table); C.Return ]
 
 and translate_sequence s param_table =
   List.flatten (List.map (translate_instruction param_table) s)
 
 let translate_function_definition fdef =
-  (* table param->adresse relat(fp) *)
+  (* On créer une table pour chaque fonction qui associe le nom des paramètres avec leurs adresses relative à FP *)
   let param_table = Hashtbl.create 17 in
   let n = List.length FUN.(fdef.parameters) in
   List.iteri (fun index p_name -> Hashtbl.add param_table p_name (1+n-index)) FUN.(fdef.parameters);
