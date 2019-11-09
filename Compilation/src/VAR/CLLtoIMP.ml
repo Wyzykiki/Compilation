@@ -78,10 +78,18 @@ let translate_function_definition fdef =
   @ [ I.Goto(IMPExpr.Deref(IMPExpr.Name "return_address")) ]
 
     
-let translate_program prog = {
-  IMP.text =
+let translate_program prog = 
+  (* Contruction de la liste des paramètres de la fonction main. *)
+  let args = ref [] in
+  for i =Array.length Sys.argv -1 downto 2 do
+    args := IMPExpr.Immediate(int_of_string Sys.argv.(i)) :: !args
+  done;
+
+{ IMP.text =
+    (* On empile les paramètres de main si elle en a. *)
+    List.flatten (List.map I.push !args)
     (* On s'assure de commencer par la fonction main *)
-    [ I.Goto(IMPExpr.Name("main")) ]
+    @ [ I.Goto(IMPExpr.Name("main")) ]
     @ (List.flatten (List.map translate_function_definition CLL.(prog.text)));
   IMP.data =
     (* Les variables globales frame_pointer et return_address doivent être ajoutées à la liste déjà présente. *)
