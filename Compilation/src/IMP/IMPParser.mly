@@ -27,10 +27,11 @@
 
 (* Priority and associativity rules *)
 
-%left ADD MINUS OR
-%left STAR DIV REM AND
-%right NEG
-%nonassoc EQ NEQ LT LE GT GE
+%left AND OR
+%left LT LE GT GE EQ NEQ
+%left ADD MINUS
+%left STAR DIV REM
+%nonassoc NEG
 
 %start program
 %type <IMP.program> program
@@ -75,7 +76,7 @@ expression:
 | e1=expression op=binop e2=expression	{ IMPExpr.Binop(op, e1, e2) }
 ;
 
-%inline l_expr:
+l_expr:
 | i=LABEL	{ IMPExpr.Name(i) }
 | STAR e=expression	{ e }
 ;
