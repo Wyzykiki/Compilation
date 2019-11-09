@@ -16,8 +16,7 @@ let push e =
              Write(Deref(Name "stack_pointer"), e) ])
 
 let pop e =
-  IMPExpr.([ Write(e, Deref(Deref(Name "stack_pointer"))) ;
-             Write(Name "stack_pointer",
+  IMPExpr.([ Write(Name "stack_pointer",
                    add (Deref(Name "stack_pointer")) (Immediate 1)) ])
 
 let rec sequence_to_string = function
