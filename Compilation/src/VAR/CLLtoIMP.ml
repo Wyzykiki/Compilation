@@ -80,7 +80,9 @@ let translate_function_definition fdef =
     
 let translate_program prog = {
   IMP.text =
-    [ I.Goto(IMPExpr.Name("main")) ] @ (List.flatten (List.map translate_function_definition CLL.(prog.text)));
+    (* On s'assure de commencer par la fonction main *)
+    [ I.Goto(IMPExpr.Name("main")) ]
+    @ (List.flatten (List.map translate_function_definition CLL.(prog.text)));
   IMP.data =
     (* Les variables globales frame_pointer et return_address doivent être ajoutées à la liste déjà présente. *)
     CLL.(prog.data) @ [ ("frame_pointer", 65536) ] @ [ ("return_address", 65536) ] 
