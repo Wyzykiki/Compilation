@@ -17,7 +17,7 @@ and le_to_string = function
   | e -> "*" ^ (to_string e)
 
 let add e1 e2 =
-  Binop(Add, e1, e2)
+  Binop(Op.Add, e1, e2)
 
 let sub e1 e2 =
-  Binop(Sub, e1, e2)
+  Binop(Op.Sub, e1, e2)

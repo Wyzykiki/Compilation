@@ -2,7 +2,7 @@
 file=`basename $1 .var`
 dir=`dirname $1`
 echo "VAR to IMP :"
-./VARCompiler.native "${dir}/${file}.var"
+./VARCompiler.native "${dir}/${file}.var" $2
 echo "IMP to ART :"
 ./IMPCompiler.native "${dir}/${file}.imp"
 echo "ART to STK :"
