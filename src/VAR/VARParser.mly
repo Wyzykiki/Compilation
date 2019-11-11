@@ -1,8 +1,8 @@
 %{
 
   open Lexing
-  open VAR
-  open FUNInstr
+  open VAR2
+  open VAR2Instr
   open IMPExpr
   open Op
 
@@ -36,7 +36,7 @@
 %nonassoc NOT
 
 %start program
-%type <VAR.program> program
+%type <VAR2.program> program
 
 %%
 
@@ -57,8 +57,8 @@ data_declaration:
 
 function_definition:
 | name=LABEL LP parameters=separated_list(COMMA, LABEL) RP
-    BEGIN locals=list(data_declaration) code=list(terminated_instruction) END
-    { { name; code; parameters; locals } }
+    BEGIN (*locals=list(data_declaration) *)code=list(terminated_instruction) END
+    { { name; code; parameters(*; locals*) } }
 ;
 
 block:
@@ -69,6 +69,8 @@ terminated_instruction:
 | i=instruction SEMI { i }
 | IF LP e=expression RP s1=block ELSE s2=block { If(e, s1, s2) }
 | WHILE LP e=expression RP s=block { While(e, s) }
+| VAR lab=LABEL SEMI { CreateVar(lab, Immediate(0)) }
+| VAR lab=LABEL SET e=expression SEMI { CreateVar(lab, e) }
 ;
 
 instruction:
