@@ -1,9 +1,9 @@
 %{
 
   open Lexing
-  open VAR2
-  open VAR2Instr
-  open IMPExpr
+  open VAR3
+  open VAR3Instr
+  open VAR3Expr
   open Op
 
 %}
@@ -36,7 +36,7 @@
 %nonassoc NOT
 
 %start program
-%type <VAR2.program> program
+%type <VAR3.program> program
 
 %%
 
@@ -78,8 +78,8 @@ instruction:
 | PRINT LP e=expression RP { Print(e) }
 | EXIT { Exit }
 | le=left_expression SET e=expression { Write(le, e) }
-| le=left_expression SET f=left_expression LP args=separated_list(COMMA, expression) RP
-    { Call(le, f, args) }
+/* | le=left_expression SET f=left_expression LP args=separated_list(COMMA, expression) RP
+    { Call(le, f, args) } */
 | RETURN LP e=expression RP { Return(e) }
 ;
 
@@ -89,11 +89,12 @@ expression:
 | LP e=expression RP { e }
 | uop=unop e=expression { Unop(uop, e) }
 | e1=expression bop=binop e2=expression { Binop(bop, e1, e2) }
+| f=left_expression LP args=separated_list(COMMA, expression) RP { Call(f, args) }
 ;
 
 left_expression:
 | l=LABEL { Name(l) }
-| STAR e=expression { e }
+| STAR LP e=expression RP { e }
 ;
 
 immediate:

@@ -16,8 +16,10 @@ and translate_sequence s =
   List.flatten (List.map translate_instruction s)
 
 let translate_function_definition fdef =
-  let retrieve_locals = function
+  let rec retrieve_locals = function
     | V2.CreateVar(lab, value) -> [ (lab, 0) ]
+    | V2.If(c, s1, s2) -> List.flatten (List.map retrieve_locals s1 @ List.map retrieve_locals s2)
+    | V2.While(c, s) -> List.flatten (List.map retrieve_locals s)
     | _ -> []
   in
 
