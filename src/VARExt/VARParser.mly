@@ -9,7 +9,7 @@
 %}
 
 (* Base *)
-%token NOP PRINT EXIT
+%token NOP EXIT
 %token SEMI COMMA
 %token SET
 %token <int>INT
@@ -21,6 +21,7 @@
 %token EQ NEQ LT LE GT GE
 %token AND OR NOT
 %token LP RP
+%token AMPERSAND
 (* Blocs / fonctions *)
 %token BEGIN END
 %token IF ELSE
@@ -73,7 +74,6 @@ terminated_instruction:
 
 instruction:
 | NOP { Nop }
-| PRINT LP e=expression RP { Print(e) }
 | EXIT { Exit }
 | le=left_expression SET e=expression { Write(le, e) }
 | le=left_expression SET f=left_expression LP args=separated_list(COMMA, expression) RP
@@ -84,6 +84,7 @@ instruction:
 expression:
 | i=immediate { Immediate(i) }
 | le=left_expression { Deref(le) }
+| AMPERSAND le=left_expression { le }
 | LP e=expression RP { e }
 | uop=unop e=expression { Unop(uop, e) }
 | e1=expression bop=binop e2=expression { Binop(bop, e1, e2) }

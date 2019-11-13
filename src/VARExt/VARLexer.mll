@@ -7,7 +7,6 @@
     let h = Hashtbl.create 17 in
     List.iter (fun (s, k) -> Hashtbl.add h s k)
       [ "nop",    NOP;
-        "print",  PRINT;
         "exit",   EXIT;
         "if",     IF;
         "else",   ELSE;
@@ -83,6 +82,8 @@ rule token = parse
       { BEGIN }
   | "}"
       { END }
+  | "&"
+      { AMPERSAND }
   | _
       { failwith ("Unknown character : " ^ (lexeme lexbuf)) }
   | eof

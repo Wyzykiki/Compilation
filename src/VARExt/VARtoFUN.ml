@@ -14,8 +14,7 @@ let rec translate_expression expr alloc_table = match expr with
 
 (* Instructions et séquences : traduction iso *)
 let rec translate_instruction instr alloc_table = match instr with
-  | Nop -> Nop  
-  | Print(e) -> Print(translate_expression e alloc_table)
+  | Nop -> Nop
   | Exit -> Exit
     
   | Write(e1, e2) ->
