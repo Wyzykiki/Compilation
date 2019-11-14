@@ -7,7 +7,9 @@ let lexing_buffer = Lexing.from_channel input
 
 let source = VARParser.program VARLexer.token lexing_buffer
   
-let target_fun = VARtoFUN.translate_program source
+let target_var = REFtoVAR.translate_program source
+
+let target_fun = VARtoFUN.translate_program target_var
 let output_file_fun = (Filename.chop_suffix input_file ".var") ^ ".fun"
 let output_fun = open_out output_file_fun
 let _ = 

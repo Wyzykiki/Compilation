@@ -1,7 +1,7 @@
 %{
 
   open Lexing
-  open VAR
+  open REF
   open FUNInstr
   open IMPExpr
   open Op
@@ -37,7 +37,7 @@
 %nonassoc NOT
 
 %start program
-%type <VAR.program> program
+%type <REF.program> program
 
 %%
 
@@ -56,8 +56,12 @@ data_declaration:
 | VAR lab=LABEL SET i=immediate SEMI { lab, i }
 ;
 
+parameter:
+| lab=LABEL { lab, false }
+| AMPERSAND lab=LABEL { lab, true }
+
 function_definition:
-| name=LABEL LP parameters=separated_list(COMMA, LABEL) RP
+| name=LABEL LP parameters=separated_list(COMMA, parameter) RP
     BEGIN locals=list(data_declaration) code=list(terminated_instruction) END
     { { name; code; parameters; locals } }
 ;
