@@ -1,8 +1,7 @@
 type function_definition = {
   name: string;
-  code: FUNInstr.sequence;
+  code: FEXInstr.sequence;
   parameters: string list;
-  locals: (string * int) list;
 }
     
 type program = {
@@ -10,18 +9,13 @@ type program = {
   globals: (string * int) list
 }
 
-let rec locals_to_string = function
-  | [] -> ""
-  | (var, value) :: ls -> "var " ^ var ^ " := " ^ (string_of_int value) ^ ";\n" ^ (locals_to_string ls)
-
 let rec params_to_string = function
   | [] -> ""
   | p :: ps -> p ^ ", " ^ (params_to_string ps)
     
 let fdef_to_string fdef =
   fdef.name ^ "(" ^ (params_to_string fdef.parameters) ^ ") {\n"
-  ^ (locals_to_string fdef.locals)
-  ^ (FUNInstr.sequence_to_string fdef.code)
+  ^ (FEXInstr.sequence_to_string fdef.code)
   ^ "}\n\n"
 
 let rec fdefs_to_string = function

@@ -1,9 +1,9 @@
 %{
 
   open Lexing
-  open REF
-  open FUNInstr
-  open IMPExpr
+  open FEX
+  open FEXInstr
+  open FEXExpr
   open Op
 
 %}
@@ -37,7 +37,7 @@
 %nonassoc NOT
 
 %start program
-%type <REF.program> program
+%type <FEX.program> program
 
 %%
 
@@ -62,8 +62,8 @@ parameter:
 
 function_definition:
 | name=LABEL LP parameters=separated_list(COMMA, parameter) RP
-    BEGIN locals=list(data_declaration) code=list(terminated_instruction) END
-    { { name; code; parameters; locals } }
+    BEGIN code=list(terminated_instruction) END
+    { { name; code; parameters } }
 ;
 
 block:
@@ -74,14 +74,14 @@ terminated_instruction:
 | i=instruction SEMI { i }
 | IF LP e=expression RP s1=block ELSE s2=block { If(e, s1, s2) }
 | WHILE LP e=expression RP s=block { While(e, s) }
+| VAR lab=LABEL SEMI { CreateVar(lab, Immediate(0)) }
+| VAR lab=LABEL SET e=expression SEMI { CreateVar(lab, e) }
 ;
 
 instruction:
 | NOP { Nop }
 | EXIT { Exit }
 | le=left_expression SET e=expression { Write(le, e) }
-| le=left_expression SET f=left_expression LP args=separated_list(COMMA, expression) RP
-    { Call(le, f, args) }
 | RETURN LP e=expression RP { Return(e) }
 ;
 
@@ -92,11 +92,12 @@ expression:
 | LP e=expression RP { e }
 | uop=unop e=expression { Unop(uop, e) }
 | e1=expression bop=binop e2=expression { Binop(bop, e1, e2) }
+| f=left_expression LP args=separated_list(COMMA, expression) RP { Call(f, args) }
 ;
 
 left_expression:
 | l=LABEL { Name(l) }
-| STAR e=expression { e }
+| STAR LP e=expression RP { e }
 ;
 
 immediate:
