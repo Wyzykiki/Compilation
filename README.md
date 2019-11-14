@@ -33,19 +33,29 @@ Syntaxe : `for (test; step) {...}` où la variable de test existe déjà (comme 
 ### Module 2 : Fonctions
 #### Langage avec fonctions et variables locales VAR  
 ##### Interpréteur  
+`VARInterpreter/`
 - [x] Contrat de base
 - [x] Paramètres pour main
 
 ##### Compilateur  
-- [x] Contrat de base
-- [x] Paramètres pour main
-- [ ] Fonction primitives
-- [x] Déclaration des variables au fil de l'eau  
-1.Une variable locale avec le même nom qu'un paramètre continue de le masqué pour toute la fonction  
-2.Seulement var locales
-- [ ] Appels de fonctions dans des expressions
+`VAR/`
+- [x] Contrat de base  
+
+`VARExt/`
+
+***FEX -> OTF -> REF -> VAR***
+- [ ] Paramètres pour main
+- [x] Fonction primitives  
+Un appel à la fonction `print` dans VAR sera traduit de FUN vers CLL,
+vers un appel à la procedure systeme `_fun_print` qui utilise l'instruction systeme `print`
+> Langage OTF (On The Fly)
+>- [x] Déclaration des variables au fil de l'eau  
+Une variable locale avec le même nom qu'un paramètre, le masque dans toutes la fonction.
+
+> Langage FEX (Function in EXpr)
+>- [x] Appels de fonctions dans des expressions
 - [ ] Optimisation des appels terminaux
-- [ ] Passage par référence
+- [x] Passage par référence
 ---
 ### Module 3 : Types et données
 ##### Langages TYP, REC et TPL

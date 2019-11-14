@@ -1,15 +1,15 @@
 %{
 
   open Lexing
-  open VAR3
-  open VAR3Instr
-  open VAR3Expr
+  open FEX
+  open FEXInstr
+  open FEXExpr
   open Op
 
 %}
 
 (* Base *)
-%token NOP PRINT EXIT
+%token NOP PRINT EXIT (* TODO: after merge *)
 %token SEMI COMMA
 %token SET
 %token <int>INT
@@ -36,7 +36,7 @@
 %nonassoc NOT
 
 %start program
-%type <VAR3.program> program
+%type <FEX.program> program
 
 %%
 
@@ -75,7 +75,7 @@ terminated_instruction:
 
 instruction:
 | NOP { Nop }
-| PRINT LP e=expression RP { Print(e) }
+| PRINT LP e=expression RP { Print(e) } (* TODO: after merge *)
 | EXIT { Exit }
 | le=left_expression SET e=expression { Write(le, e) }
 /* | le=left_expression SET f=left_expression LP args=separated_list(COMMA, expression) RP

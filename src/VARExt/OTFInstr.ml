@@ -1,6 +1,6 @@
 type instruction =
   | Nop
-  | Print of IMPExpr.expression
+  | Print of IMPExpr.expression (*TODO: after merge *)
   | Exit
   | Write of IMPExpr.expression * IMPExpr.expression
   | If    of IMPExpr.expression * sequence * sequence
@@ -18,7 +18,7 @@ let rec sequence_to_string = function
 
 and instr_to_string = function
   | Nop -> ""
-  | Print(e) -> "print(" ^ (IMPExpr.to_string e) ^ ");\n"
+  | Print(e) -> "print(" ^ (IMPExpr.to_string e) ^ ");\n" (*TODO: after merge *)
   | Exit -> "exit;\n"
   | Write(le, e) -> (IMPExpr.le_to_string le) ^ " := " ^ (IMPExpr.to_string e) ^ ";\n"
   | If(c, s1, s2) ->

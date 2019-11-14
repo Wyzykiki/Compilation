@@ -1,6 +1,6 @@
 type function_definition = {
   name: string;
-  code: VAR3Instr.sequence;
+  code: OTFInstr.sequence;
   parameters: string list;
 }
     
@@ -15,7 +15,7 @@ let rec params_to_string = function
     
 let fdef_to_string fdef =
   fdef.name ^ "(" ^ (params_to_string fdef.parameters) ^ ") {\n"
-  ^ (VAR3Instr.sequence_to_string fdef.code)
+  ^ (OTFInstr.sequence_to_string fdef.code)
   ^ "}\n\n"
 
 let rec fdefs_to_string = function

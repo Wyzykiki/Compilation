@@ -7,19 +7,17 @@ let lexing_buffer = Lexing.from_channel input
 
 let source = VARParser.program VARLexer.token lexing_buffer
   
-let target_var2 = VAR3toVAR2.translate_program source
-let output_file_var2 = (Filename.chop_suffix input_file ".var") ^ ".var2"
-let output_var2 = open_out output_file_var2
+let target_otf = FEXtoOTF.translate_program source
+let output_file_otf = (Filename.chop_suffix input_file ".var") ^ ".otf"
+let output_otf = open_out output_file_otf
 let _ = 
-  Printf.fprintf output_var2 "%s" (VAR2.prog_to_string target_var2)
+  Printf.fprintf output_otf "%s" (OTF.prog_to_string target_otf)
 
-
-let target_var = VAR2toVAR.translate_program target_var2
-let output_file_var = (Filename.chop_suffix input_file ".var") ^ ".var1"
+let target_var = OTFtoVAR.translate_program target_otf
+let output_file_var = (Filename.chop_suffix input_file ".var") ^ ".varBis"
 let output_var = open_out output_file_var
 let _ = 
   Printf.fprintf output_var "%s" (VAR.prog_to_string target_var)
-
 
 let target_fun = VARtoFUN.translate_program target_var
 let output_file_fun = (Filename.chop_suffix input_file ".var") ^ ".fun"
