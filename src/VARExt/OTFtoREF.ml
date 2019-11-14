@@ -24,11 +24,11 @@ let translate_function_definition fdef =
     | _ -> []
   in
 
-  { VAR.name = OTF.(fdef.name);
-    VAR.code = translate_sequence OTF.(fdef.code);
-    VAR.parameters = OTF.(fdef.parameters);
-    VAR.locals = List.flatten (List.map retrieve_locals OTF.(fdef.code)) }
+  { REF.name = OTF.(fdef.name);
+    REF.code = translate_sequence OTF.(fdef.code);
+    REF.parameters = OTF.(fdef.parameters);
+    REF.locals = List.flatten (List.map retrieve_locals OTF.(fdef.code)) }
 
 let translate_program prog =
-  { VAR.text = List.map translate_function_definition OTF.(prog.text);
-    VAR.globals = OTF.(prog.globals) }
+  { REF.text = List.map translate_function_definition OTF.(prog.text);
+    REF.globals = OTF.(prog.globals) }

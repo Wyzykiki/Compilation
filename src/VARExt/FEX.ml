@@ -1,7 +1,7 @@
 type function_definition = {
   name: string;
   code: FEXInstr.sequence;
-  parameters: string list;
+  parameters: (string * bool) list;
 }
     
 type program = {
@@ -11,7 +11,7 @@ type program = {
 
 let rec params_to_string = function
   | [] -> ""
-  | p :: ps -> p ^ ", " ^ (params_to_string ps)
+  | (p, is_ref) :: ps -> if is_ref then "&" else "" ^ p ^ ", " ^ (params_to_string ps)
     
 let fdef_to_string fdef =
   fdef.name ^ "(" ^ (params_to_string fdef.parameters) ^ ") {\n"

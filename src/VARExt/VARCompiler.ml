@@ -17,9 +17,13 @@ let target_ref = OTFtoREF.translate_program target_otf
 let output_file_ref = (Filename.chop_suffix input_file ".var") ^ ".ref"
 let output_ref = open_out output_file_ref
 let _ = 
-  Printf.fprintf output_var "%s" (VAR.prog_to_string target_var)
+  Printf.fprintf output_ref "%s" (REF.prog_to_string target_ref)
     
 let target_var = REFtoVAR.translate_program target_ref
+let output_file_var = (Filename.chop_suffix input_file ".var") ^ ".varBis"
+let output_var = open_out output_file_var
+let _ = 
+  Printf.fprintf output_var "%s" (VAR.prog_to_string target_var)
 
 let target_fun = VARtoFUN.translate_program target_var
 let output_file_fun = (Filename.chop_suffix input_file ".var") ^ ".fun"

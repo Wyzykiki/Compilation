@@ -82,11 +82,8 @@ rule token = parse
       { BEGIN }
   | "}"
       { END }
-<<<<<<< HEAD
   | "&"
       { AMPERSAND }
-=======
->>>>>>> call_in_expr
   | _
       { failwith ("Unknown character : " ^ (lexeme lexbuf)) }
   | eof

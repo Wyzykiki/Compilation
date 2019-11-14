@@ -41,7 +41,7 @@ let rec translate_instruction = function
 
   (* Si la condition est un appel de fonction, il faut penser à réévaluer l'appel à chaque fois dans la boucle. *)
   | FI.While(c, s) -> let expr, calls = translate_expression c in
-      calls @ [ OI.While(expr, [ List.hd (List.rev calls) ] @ translate_sequence s) ]
+      calls @ [ OI.While(expr, (if calls != [] then [ List.hd (List.rev calls) ] else []) @ translate_sequence s) ]
 
   | FI.Return(e) -> let expr, calls = translate_expression e in
       calls @ [ OI.Return(expr) ]
