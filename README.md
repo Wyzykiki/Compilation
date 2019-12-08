@@ -59,8 +59,6 @@ Une variable locale avec le même nom qu'un paramètre, le masque dans toutes la
 - [ ] Optimisation des appels terminaux
 - [x] Passage par référence
 ---
-### Module 3 : Types et données
-##### Langages TYP, REC et TPL
+### Module 3 : Types, données et objets
+##### Langages TYP, REC, TPL, CLS et EXT
 - [ ] Contrat de base
----
-### Module 4 : Objets
