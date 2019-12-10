@@ -104,6 +104,7 @@ expr_type:
 | TBOOL { TBool }
 | ty=expr_type STAR { TPointer(ty) }
 | FUN LP ps=separated_list(COMMA, expr_type) ARROW ty=expr_type RP { TFun(ty, ps) }
+| LP ty=expr_type RP LB RB { TArray(ty) }
 | lab=LABEL { TRecord(lab) }
 | LP ty=expr_type RP { ty }
 ;
