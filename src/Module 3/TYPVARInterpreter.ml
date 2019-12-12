@@ -7,11 +7,17 @@ let lexing_buffer = Lexing.from_channel input
 
 let prog_typ = TYPParser.program TYPLexer.token lexing_buffer
 let _ = TYPCheck.check_program prog_typ
-(* let prog_rec = TYPtoREC.translate_program prog_typ
+let prog_rec = TYPtoREC.translate_program prog_typ
 let prog_tpl = RECtoTPL.translate_program prog_rec
 let prog_fnx = TPLtoFNX.translate_program prog_tpl
 let prog_seq = FNXtoSEQ.translate_program prog_fnx
 let prog_vrx = SEQtoVRX.translate_program prog_seq
 let prog_var = VRXtoVAR.translate_program prog_vrx
+
+let output_file_var = (Filename.chop_suffix input_file ".typ") ^ ".var"
+let output_fun = open_out output_file_var
+let _ = 
+  Printf.fprintf output_fun "%s" (VAR.prog_to_string prog_var)
+
 let _ =
-  VAREval.eval_program prog_var *)
+  VAREvalFP.eval_program prog_var

@@ -61,4 +61,12 @@ Une variable locale avec le même nom qu'un paramètre, le masque dans toutes la
 ---
 ### Module 3 : Types, données et objets
 ##### Langages TYP, REC, TPL, CLS et EXT
-- [ ] Contrat de base
+`Module 3/`
+>- [ ] Contrat de base  
+> La chaine de traduction de TYP vers VAR est fonctionnel  
+> La traduction de EXT vers VAR devrait être fonctionnel mais n'a pas pu être testé
+> car la traduction de CLS vers EXT n'est pas complète en raison d'un manque de temps.
+- [ ] Fluidifier la création de structures
+- [ ] Égalité structurelle
+- [ ] Inclusion de code FNX en syntaxe concrète
+- [ ] Gestion de la mémoire avancée
